@@ -1,101 +1,108 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>TechGear - Catálogo</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-
-        header {
-            background-color: #222;
-            color: white;
-            text-align: center;
-            padding: 25px;
-        }
-
-        header h1 {
-            margin: 0;
-        }
-
-        .catalogo {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 30px;
-            max-width: 1200px;
-            margin: auto;
-        }
-
-        .producto {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .producto h2 {
-            margin-top: 0;
-        }
-
-        .precio {
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .categoria {
-            color: #666;
-        }
-
-        .stock {
-            margin-top: 10px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TechGear - Catálogo</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:Arial,sans-serif;margin:0;background:#f1f3f5;color:#252525}
+header{background:#fff;border-bottom:3px solid #e21b23;padding:20px 45px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 3px 15px rgba(0,0,0,.1);position:relative}
+header:after{content:"";position:absolute;bottom:-3px;left:45px;width:120px;height:3px;background:#ff3038}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-icon{width:38px;height:38px;border:2px solid #e21b23;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#e21b23;font-weight:bold;font-size:20px}
+header h1{margin:0;color:#df1d25;font-size:28px;letter-spacing:2px}
+header p{margin:4px 0 0;color:#777;font-size:12px;letter-spacing:2px}
+.boton-pedido,.boton-crear{background:#e21b23;color:#fff;padding:11px 18px;border-radius:5px;text-decoration:none;font-weight:bold;border:1px solid #e21b23;transition:.2s}
+.boton-pedido:hover,.boton-crear:hover{background:#bd1118;box-shadow:0 0 10px rgba(226,27,35,.25)}
+.contenido{max-width:1100px;margin:auto;padding:40px 25px}
+.encabezado-catalogo{display:flex;align-items:center;justify-content:space-between;max-width:900px;margin:0 auto 25px}
+.encabezado-catalogo h2{margin:0;color:#242424;font-size:25px}
+.encabezado-catalogo h2 span{color:#e21b23}
+.catalogo{display:grid;gap:20px;max-width:900px;margin:auto}
+.producto{background:#fff;border:1px solid #ddd;border-left:4px solid #e21b23;border-radius:8px;padding:20px;display:flex;gap:25px;box-shadow:0 4px 12px rgba(0,0,0,.08);transition:.25s;position:relative}
+.producto:before{content:"TECHGEAR // PRODUCTO";position:absolute;right:15px;top:10px;font-size:9px;color:#aaa;letter-spacing:1px}
+.producto:hover{transform:translateY(-3px);box-shadow:0 7px 20px rgba(226,27,35,.16)}
+.imagen-producto,.sin-imagen{width:180px;height:180px;flex-shrink:0;border-radius:7px}
+.imagen-producto{object-fit:contain;background:#f7f7f7;border:1px solid #ddd;display:block}
+.sin-imagen{display:flex;align-items:center;justify-content:center;background:#eceeef;border:1px solid #ddd;color:#888;font-size:13px}
+.informacion{flex:1;display:flex;flex-direction:column;padding-top:12px}
+.producto h3{margin:0 0 9px;color:#d91d25;font-size:22px}
+.descripcion{color:#666;line-height:1.5;margin:0 0 9px}
+.precio{color:#222;font-size:23px;font-weight:bold;margin:9px 0}
+.categoria,.stock{color:#555;margin:6px 0}
+.categoria strong,.stock strong{color:#222}
+.acciones{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:15px}
+.acciones form{margin:0}
+.editar,.eliminar{height:36px;padding:0 15px;border-radius:4px;font-size:14px;display:flex;align-items:center;justify-content:center;font-weight:bold;transition:.2s}
+.editar{background:#e21b23;color:white;text-decoration:none;border:1px solid #e21b23}
+.editar:hover{background:#bd1118}
+.eliminar{background:#fff;border:1px solid #e21b23;color:#e21b23;cursor:pointer}
+.eliminar:hover{background:#e21b23;color:#fff}
+.sin-productos{color:#777;text-align:center;padding:40px}
+@media(max-width:650px){
+header{padding:20px;flex-direction:column;gap:18px;text-align:center}
+header:after{left:50%;transform:translateX(-50%)}
+.contenido{padding:30px 18px}
+.encabezado-catalogo{flex-direction:column;align-items:flex-start;gap:15px}
+.producto{flex-direction:column;align-items:center}
+.informacion{width:100%}
+.imagen-producto,.sin-imagen{width:160px;height:160px}
+}
+</style>
 </head>
-
 <body>
 
-    <header>
-        <h1>TechGear</h1>
-        <p>Catálogo de productos tecnológicos</p>
-    </header>
+<header>
+<div class="logo">
+<div class="logo-icon">TG</div>
+<div>
+<h1>TECHGEAR</h1>
+<p>HARDWARE & ACCESSORIOS</p>
+</div>
+</div>
+<a class="boton-pedido" href="{% url 'checkout' %}">Registrar pedido</a>
+</header>
 
-    <main class="catalogo">
+<main class="contenido">
+<div class="encabezado-catalogo">
+<h2>CATÁLOGO <span>// PRODUCTOS</span></h2>
+<a class="boton-crear" href="{% url 'crear_producto' %}">+ Crear producto</a>
+</div>
 
-        {% for producto in productos %}
+<section class="catalogo">
+{% for producto in productos %}
+<article class="producto">
 
-            <div class="producto">
+{% if producto.imagen %}
+<img class="imagen-producto" src="{{ producto.imagen }}" alt="{{ producto.nombre }}">
+{% else %}
+<div class="sin-imagen">SIN IMAGEN</div>
+{% endif %}
 
-                <h2>{{ producto.nombre }}</h2>
+<div class="informacion">
+<h3>{{ producto.nombre }}</h3>
+<p class="descripcion">{{ producto.descripcion }}</p>
+<p class="precio">${{ producto.precio }}</p>
+<p class="categoria"><strong>Categoría:</strong> {{ producto.categoria }}</p>
+<p class="stock"><strong>Stock:</strong> {{ producto.stock }}</p>
 
-                <p class="precio">
-                    ${{ producto.precio }}
-                </p>
+<div class="acciones">
+<a class="editar" href="{% url 'editar_producto' producto.id %}">Editar</a>
 
-                <p class="categoria">
-                    Categoría: {{ producto.categoria }}
-                </p>
+<form method="POST" action="{% url 'eliminar_producto' producto.id %}">
+{% csrf_token %}
+<button class="eliminar" type="submit" onclick="return confirm('¿Seguro que deseas eliminar este producto?');">Eliminar</button>
+</form>
+</div>
+</div>
 
-                <p class="stock">
-                    Stock disponible: {{ producto.stock }}
-                </p>
-
-            </div>
-
-        {% empty %}
-
-            <p>No hay productos disponibles.</p>
-
-        {% endfor %}
-
-    </main>
+</article>
+{% empty %}
+<p class="sin-productos">No hay productos disponibles.</p>
+{% endfor %}
+</section>
+</main>
 
 </body>
 </html>
