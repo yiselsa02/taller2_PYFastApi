@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TechGear - Catálogo</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #222;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        .catalogo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .producto {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .producto h2 {
+            margin-top: 0;
+        }
+
+        .precio {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .categoria {
+            color: #666;
+        }
+
+        .stock {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>TechGear</h1>
+        <p>Catálogo de productos tecnológicos</p>
+    </header>
+
+    <main class="catalogo">
+
+        {% for producto in productos %}
+
+            <div class="producto">
+
+                <h2>{{ producto.nombre }}</h2>
+
+                <p class="precio">
+                    ${{ producto.precio }}
+                </p>
+
+                <p class="categoria">
+                    Categoría: {{ producto.categoria }}
+                </p>
+
+                <p class="stock">
+                    Stock disponible: {{ producto.stock }}
+                </p>
+
+            </div>
+
+        {% empty %}
+
+            <p>No hay productos disponibles.</p>
+
+        {% endfor %}
+
+    </main>
+
+</body>
+</html>
