@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from bson import ObjectId
+from pymongo.errors import PyMongoError
 
 from src.database.conexion import (
     pedidos_collection,
@@ -26,60 +27,108 @@ async def crear_pedido(pedido: Pedido):
             detail="El ID del producto no es válido"
         )
 
-    # Verificar que el producto exista
-    producto = await productos_collection.find_one(
-        {"_id": ObjectId(pedido.producto_id)}
-    )
-
-    if not producto:
+    # Verificar que la cantidad sea mayor que cero
+    if pedido.cantidad <= 0:
         raise HTTPException(
-            status_code=404,
-            detail="El producto no existe"
+            status_code=400,
+            detail="La cantidad debe ser mayor que cero"
         )
 
-    # Convertir el modelo a diccionario
-    pedido_dict = pedido.model_dump()
+    try:
+        # Buscar el producto
+        producto = await productos_collection.find_one(
+            {"_id": ObjectId(pedido.producto_id)}
+        )
 
-    # Insertar pedido
-    resultado = await pedidos_collection.insert_one(
-        pedido_dict
-    )
+        # Verificar que el producto exista
+        if not producto:
+            raise HTTPException(
+                status_code=404,
+                detail="El producto no existe"
+            )
 
-    # Obtener el pedido recién creado
-    pedido_creado = await pedidos_collection.find_one(
-        {"_id": resultado.inserted_id}
-    )
+        # Verificar que haya stock suficiente
+        if producto.get("stock", 0) <= 0:
+            raise HTTPException(
+                status_code=400,
+                detail="El producto no tiene stock disponible"
+            )
 
-    # Convertir ObjectId a string
-    pedido_creado["id"] = str(
-        pedido_creado["_id"]
-    )
+        if pedido.cantidad > producto["stock"]:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Stock insuficiente. Stock disponible: {producto['stock']}"
+            )
 
-    # Eliminar el ObjectId original
-    del pedido_creado["_id"]
+        # Convertir el modelo a diccionario
+        pedido_dict = pedido.model_dump()
 
-    return {
-        "mensaje": "Pedido registrado correctamente",
-        "pedido": pedido_creado
-    }
+        # Insertar pedido
+        resultado = await pedidos_collection.insert_one(
+            pedido_dict
+        )
+
+        # Descontar el stock
+        await productos_collection.update_one(
+            {"_id": ObjectId(pedido.producto_id)},
+            {
+                "$inc": {
+                    "stock": -pedido.cantidad
+                }
+            }
+        )
+
+        # Obtener el pedido recién creado
+        pedido_creado = await pedidos_collection.find_one(
+            {"_id": resultado.inserted_id}
+        )
+
+        # Convertir ObjectId a string
+        pedido_creado["id"] = str(
+            pedido_creado["_id"]
+        )
+
+        # Eliminar ObjectId original
+        del pedido_creado["_id"]
+
+        return {
+            "mensaje": "Pedido registrado correctamente",
+            "pedido": pedido_creado
+        }
+
+    except HTTPException:
+        raise
+
+    except PyMongoError:
+        raise HTTPException(
+            status_code=503,
+            detail="No se pudo conectar con la base de datos"
+        )
 
 
 # READ - Obtener pedidos
 @router.get("/")
 async def obtener_pedidos():
 
-    pedidos = []
+    try:
+        pedidos = []
 
-    cursor = pedidos_collection.find()
+        cursor = pedidos_collection.find()
 
-    async for pedido in cursor:
+        async for pedido in cursor:
 
-        pedido["id"] = str(
-            pedido["_id"]
+            pedido["id"] = str(
+                pedido["_id"]
+            )
+
+            del pedido["_id"]
+
+            pedidos.append(pedido)
+
+        return pedidos
+
+    except PyMongoError:
+        raise HTTPException(
+            status_code=503,
+            detail="No se pudo consultar la base de datos"
         )
-
-        del pedido["_id"]
-
-        pedidos.append(pedido)
-
-    return pedidos

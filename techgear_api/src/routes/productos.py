@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from bson import ObjectId
+from pymongo.errors import PyMongoError
 
 from src.database.conexion import productos_collection
 from src.models.producto_model import Producto
@@ -15,39 +16,52 @@ router = APIRouter(
 @router.post("/")
 async def crear_producto(producto: Producto):
 
-    producto_dict = producto.model_dump()
+    try:
+        producto_dict = producto.model_dump()
 
-    resultado = await productos_collection.insert_one(producto_dict)
+        resultado = await productos_collection.insert_one(producto_dict)
 
-    producto_creado = await productos_collection.find_one(
-        {"_id": resultado.inserted_id}
-    )
+        producto_creado = await productos_collection.find_one(
+            {"_id": resultado.inserted_id}
+        )
 
-    producto_creado["id"] = str(producto_creado["_id"])
-    del producto_creado["_id"]
+        producto_creado["id"] = str(producto_creado["_id"])
+        del producto_creado["_id"]
 
-    return {
-        "mensaje": "Producto creado correctamente",
-        "producto": producto_creado
-    }
+        return {
+            "mensaje": "Producto creado correctamente",
+            "producto": producto_creado
+        }
+
+    except PyMongoError:
+        raise HTTPException(
+            status_code=503,
+            detail="No se pudo conectar con la base de datos"
+        )
 
 
 # READ - Obtener todos los productos
 @router.get("/")
 async def obtener_productos():
 
-    productos = []
+    try:
+        productos = []
 
-    cursor = productos_collection.find()
+        cursor = productos_collection.find()
 
-    async for producto in cursor:
+        async for producto in cursor:
+            producto["id"] = str(producto["_id"])
+            del producto["_id"]
 
-        producto["id"] = str(producto["_id"])
-        del producto["_id"]
+            productos.append(producto)
 
-        productos.append(producto)
+        return productos
 
-    return productos
+    except PyMongoError:
+        raise HTTPException(
+            status_code=503,
+            detail="No se pudo consultar la base de datos"
+        )
 
 
 # READ - Obtener un producto por ID
@@ -60,20 +74,30 @@ async def obtener_producto(producto_id: str):
             detail="El ID del producto no es válido"
         )
 
-    producto = await productos_collection.find_one(
-        {"_id": ObjectId(producto_id)}
-    )
-
-    if not producto:
-        raise HTTPException(
-            status_code=404,
-            detail="Producto no encontrado"
+    try:
+        producto = await productos_collection.find_one(
+            {"_id": ObjectId(producto_id)}
         )
 
-    producto["id"] = str(producto["_id"])
-    del producto["_id"]
+        if not producto:
+            raise HTTPException(
+                status_code=404,
+                detail="Producto no encontrado"
+            )
 
-    return producto
+        producto["id"] = str(producto["_id"])
+        del producto["_id"]
+
+        return producto
+
+    except HTTPException:
+        raise
+
+    except PyMongoError:
+        raise HTTPException(
+            status_code=503,
+            detail="No se pudo consultar la base de datos"
+        )
 
 
 # UPDATE - Actualizar producto
@@ -89,31 +113,41 @@ async def actualizar_producto(
             detail="El ID del producto no es válido"
         )
 
-    resultado = await productos_collection.update_one(
-        {"_id": ObjectId(producto_id)},
-        {"$set": producto.model_dump()}
-    )
-
-    if resultado.matched_count == 0:
-        raise HTTPException(
-            status_code=404,
-            detail="Producto no encontrado"
+    try:
+        resultado = await productos_collection.update_one(
+            {"_id": ObjectId(producto_id)},
+            {"$set": producto.model_dump()}
         )
 
-    producto_actualizado = await productos_collection.find_one(
-        {"_id": ObjectId(producto_id)}
-    )
+        if resultado.matched_count == 0:
+            raise HTTPException(
+                status_code=404,
+                detail="Producto no encontrado"
+            )
 
-    producto_actualizado["id"] = str(
-        producto_actualizado["_id"]
-    )
+        producto_actualizado = await productos_collection.find_one(
+            {"_id": ObjectId(producto_id)}
+        )
 
-    del producto_actualizado["_id"]
+        producto_actualizado["id"] = str(
+            producto_actualizado["_id"]
+        )
 
-    return {
-        "mensaje": "Producto actualizado correctamente",
-        "producto": producto_actualizado
-    }
+        del producto_actualizado["_id"]
+
+        return {
+            "mensaje": "Producto actualizado correctamente",
+            "producto": producto_actualizado
+        }
+
+    except HTTPException:
+        raise
+
+    except PyMongoError:
+        raise HTTPException(
+            status_code=503,
+            detail="No se pudo actualizar el producto"
+        )
 
 
 # DELETE - Eliminar producto
@@ -126,16 +160,26 @@ async def eliminar_producto(producto_id: str):
             detail="El ID del producto no es válido"
         )
 
-    resultado = await productos_collection.delete_one(
-        {"_id": ObjectId(producto_id)}
-    )
-
-    if resultado.deleted_count == 0:
-        raise HTTPException(
-            status_code=404,
-            detail="Producto no encontrado"
+    try:
+        resultado = await productos_collection.delete_one(
+            {"_id": ObjectId(producto_id)}
         )
 
-    return {
-        "mensaje": "Producto eliminado correctamente"
-    }
+        if resultado.deleted_count == 0:
+            raise HTTPException(
+                status_code=404,
+                detail="Producto no encontrado"
+            )
+
+        return {
+            "mensaje": "Producto eliminado correctamente"
+        }
+
+    except HTTPException:
+        raise
+
+    except PyMongoError:
+        raise HTTPException(
+            status_code=503,
+            detail="No se pudo eliminar el producto"
+        )
