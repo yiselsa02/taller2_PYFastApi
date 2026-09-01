@@ -2,7 +2,7 @@ import requests
 from django.shortcuts import render, redirect
 
 
-API_URL = "https://http://127.0.0.1:8000.vercel.app"
+API_URL = "https://taller2-pyfastapi.onrender.com"
 
 
 def catalogo(request):
