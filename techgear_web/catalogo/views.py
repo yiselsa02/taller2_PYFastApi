@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 API_URL = "https://taller2-pyfastapi.onrender.com"
 
 
+# READ - Mostrar catálogo
 def catalogo(request):
 
     url = f"{API_URL}/productos/"
@@ -25,6 +26,7 @@ def catalogo(request):
     )
 
 
+# CREATE - Registrar pedido
 def checkout(request):
 
     if request.method == "POST":
@@ -47,6 +49,7 @@ def checkout(request):
         )
 
         if respuesta.status_code == 200:
+
             return render(
                 request,
                 "catalogo/checkout.html",
@@ -66,6 +69,27 @@ def checkout(request):
     return render(
         request,
         "catalogo/checkout.html"
+    )
+
+
+# READ - Mostrar pedidos
+def pedidos(request):
+
+    url = f"{API_URL}/pedidos/"
+
+    respuesta = requests.get(url)
+
+    if respuesta.status_code == 200:
+        pedidos = respuesta.json()
+    else:
+        pedidos = []
+
+    return render(
+        request,
+        "catalogo/pedidos.html",
+        {
+            "pedidos": pedidos
+        }
     )
 
 

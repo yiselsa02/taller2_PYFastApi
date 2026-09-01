@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>TechGear - Pedidos</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f1f3f5;
+    color: #252525;
+}
+
+header {
+    background: #fff;
+    border-bottom: 3px solid #e21b23;
+    padding: 20px 45px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 3px 15px rgba(0,0,0,.1);
+    position: relative;
+}
+
+header:after {
+    content: "";
+    position: absolute;
+    bottom: -3px;
+    left: 45px;
+    width: 120px;
+    height: 3px;
+    background: #ff3038;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    width: 38px;
+    height: 38px;
+    border: 2px solid #e21b23;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e21b23;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+header h1 {
+    margin: 0;
+    color: #df1d25;
+    font-size: 28px;
+    letter-spacing: 2px;
+}
+
+header p {
+    margin: 4px 0 0;
+    color: #777;
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+
+.botones {
+    display: flex;
+    gap: 10px;
+}
+
+.boton {
+    padding: 11px 18px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: .2s;
+}
+
+.boton-catalogo {
+    background: #e21b23;
+    color: white;
+    border: 1px solid #e21b23;
+}
+
+.boton-catalogo:hover {
+    background: #bd1118;
+}
+
+.boton-pedido {
+    background: white;
+    color: #e21b23;
+    border: 1px solid #e21b23;
+}
+
+.boton-pedido:hover {
+    background: #e21b23;
+    color: white;
+}
+
+.contenido {
+    max-width: 1100px;
+    margin: auto;
+    padding: 40px 25px;
+}
+
+.encabezado {
+    max-width: 900px;
+    margin: 0 auto 25px;
+}
+
+.encabezado h2 {
+    margin: 0;
+    color: #242424;
+    font-size: 25px;
+}
+
+.encabezado h2 span {
+    color: #e21b23;
+}
+
+.encabezado p {
+    color: #777;
+}
+
+.contenedor-pedidos {
+    max-width: 900px;
+    margin: auto;
+    background: white;
+    border: 1px solid #ddd;
+    border-left: 4px solid #e21b23;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    overflow: hidden;
+}
+
+.titulo {
+    background: #e21b23;
+    color: white;
+    padding: 16px 20px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.tabla {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #f7f7f7;
+    color: #d91d25;
+    text-align: left;
+    padding: 15px;
+    border-bottom: 2px solid #e21b23;
+}
+
+td {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+    background: #fff5f5;
+}
+
+.id {
+    color: #e21b23;
+    font-weight: bold;
+}
+
+.producto-id {
+    color: #555;
+    font-weight: bold;
+}
+
+.cantidad {
+    font-weight: bold;
+}
+
+.cliente {
+    color: #222;
+    font-weight: bold;
+}
+
+.sin-pedidos {
+    max-width: 900px;
+    margin: auto;
+    background: white;
+    border: 1px solid #ddd;
+    border-left: 4px solid #e21b23;
+    border-radius: 8px;
+    padding: 50px;
+    text-align: center;
+}
+
+.sin-pedidos h3 {
+    color: #d91d25;
+}
+
+.sin-pedidos p {
+    color: #777;
+}
+
+@media(max-width:650px) {
+
+    header {
+        padding: 20px;
+        flex-direction: column;
+        gap: 18px;
+        text-align: center;
+    }
+
+    header:after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .botones {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .boton {
+        width: 100%;
+        text-align: center;
+    }
+
+    .contenido {
+        padding: 30px 18px;
+    }
+
+    th,
+    td {
+        padding: 10px;
+        font-size: 13px;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">
+
+<div class="logo-icon">
+TG
+</div>
+
+<div>
+
+<h1>TECHGEAR</h1>
+
+<p>HARDWARE & ACCESSORIOS</p>
+
+</div>
+
+</div>
+
+<div class="botones">
+
+<a
+class="boton boton-catalogo"
+href="{% url 'catalogo' %}"
+>
+Catálogo
+</a>
+
+<a
+class="boton boton-pedido"
+href="{% url 'checkout' %}"
+>
+Registrar pedido
+</a>
+
+</div>
+
+</header>
+
+<main class="contenido">
+
+<div class="encabezado">
+
+<h2>
+PEDIDOS <span>// REGISTRADOS</span>
+</h2>
+
+<p>
+Consulta los pedidos realizados en TechGear.
+</p>
+
+</div>
+
+{% if pedidos %}
+
+<div class="contenedor-pedidos">
+
+<div class="titulo">
+TECHGEAR // LISTADO DE PEDIDOS
+</div>
+
+<div class="tabla">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>ID DEL PEDIDO</th>
+<th>ID DEL PRODUCTO</th>
+<th>CANTIDAD</th>
+<th>CLIENTE</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for pedido in pedidos %}
+
+<tr>
+
+<td class="id">
+{{ pedido.id }}
+</td>
+
+<td class="producto-id">
+{{ pedido.producto_id }}
+</td>
+
+<td class="cantidad">
+{{ pedido.cantidad }}
+</td>
+
+<td class="cliente">
+{{ pedido.cliente }}
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+{% else %}
+
+<div class="sin-pedidos">
+
+<h3>
+NO HAY PEDIDOS REGISTRADOS
+</h3>
+
+<p>
+Todavía no se ha realizado ningún pedido.
+</p>
+
+</div>
+
+{% endif %}
+
+</main>
+
+</body>
+
+</html>

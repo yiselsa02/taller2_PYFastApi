@@ -4,9 +4,23 @@ from . import views
 
 urlpatterns = [
 
-    path("", views.catalogo, name="catalogo"),
+    path(
+        "",
+        views.catalogo,
+        name="catalogo"
+    ),
 
-    path("checkout/", views.checkout, name="checkout"),
+    path(
+        "checkout/",
+        views.checkout,
+        name="checkout"
+    ),
+
+    path(
+        "pedidos/",
+        views.pedidos,
+        name="pedidos"
+    ),
 
     path(
         "productos/nuevo/",

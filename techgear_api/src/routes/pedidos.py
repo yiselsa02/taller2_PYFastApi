@@ -35,6 +35,7 @@ async def crear_pedido(pedido: Pedido):
         )
 
     try:
+
         # Buscar el producto
         producto = await productos_collection.find_one(
             {"_id": ObjectId(pedido.producto_id)}
@@ -47,20 +48,21 @@ async def crear_pedido(pedido: Pedido):
                 detail="El producto no existe"
             )
 
-        # Verificar que haya stock suficiente
+        # Verificar que haya stock
         if producto.get("stock", 0) <= 0:
             raise HTTPException(
                 status_code=400,
                 detail="El producto no tiene stock disponible"
             )
 
+        # Verificar stock suficiente
         if pedido.cantidad > producto["stock"]:
             raise HTTPException(
                 status_code=400,
                 detail=f"Stock insuficiente. Stock disponible: {producto['stock']}"
             )
 
-        # Convertir el modelo a diccionario
+        # Convertir modelo a diccionario
         pedido_dict = pedido.model_dump()
 
         # Insertar pedido
@@ -68,7 +70,7 @@ async def crear_pedido(pedido: Pedido):
             pedido_dict
         )
 
-        # Descontar el stock
+        # Descontar stock
         await productos_collection.update_one(
             {"_id": ObjectId(pedido.producto_id)},
             {
@@ -78,7 +80,7 @@ async def crear_pedido(pedido: Pedido):
             }
         )
 
-        # Obtener el pedido recién creado
+        # Obtener pedido creado
         pedido_creado = await pedidos_collection.find_one(
             {"_id": resultado.inserted_id}
         )
@@ -111,6 +113,7 @@ async def crear_pedido(pedido: Pedido):
 async def obtener_pedidos():
 
     try:
+
         pedidos = []
 
         cursor = pedidos_collection.find()
